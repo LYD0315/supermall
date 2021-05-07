@@ -3,13 +3,18 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
-    <scroll class="content" ref="scroll" :pro-type="3" @scroll="contentScroll">
+    <scroll class="content"
+            ref="scroll"
+            :pro-type="3"
+            @scroll="contentScroll"
+            :pull-up-load="true"
+            @pullingUp = "loadMore">
       <home-swiper :banners="banners"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
       <home-feature-view></home-feature-view>
       <tab-control :titles="['流行','精选','好物']"
-                   class="tab-control"
-                   @tabClick="tabClick"></tab-control>
+                   @tabClick="tabClick"
+                    ref="tabCtrl"></tab-control>
       <goods-list :goods="showGoods"></goods-list>
     </scroll>
     <back-top @click.native="backClick" v-show="backTopShow"></back-top>
@@ -29,6 +34,7 @@ import Scroll from "components/common/scroll/Scroll";
 import BackTop from "components/content/backTop/BackTop";
 
 import {getHomeMultidata, getHomeGoods} from "network/home";
+import {debounce} from "common/utils";
 
 
 export default {
@@ -54,7 +60,8 @@ export default {
         'sell': {page: 0, list: []}
       },
       currentType: 'pop',
-      backTopShow:false
+      backTopShow: false,
+      tabOffsetTop:0
     }
   },
   computed: {
@@ -69,13 +76,32 @@ export default {
     this.getHomeGoods('pop')
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
+
+
+  },
+  mounted() {
+    const refresh = debounce(this.$refs.scroll.refresh)
+
+    //图片加载情况所以需要在mounted中进行监听
+    this.$bus.$on('itemImageLoad', () => {
+      // this.$refs.scroll.refresh();
+      refresh();
+    })
+
+
+  //  拿到tabCtrl的offsetTop
+  //  所有组件中都有一个$el  用于获取组件的元素
+    console.log(this.$refs.tabCtrl.$el.offsetTop);
   },
   methods: {
     /**
      * 事件监听相关代码
      */
+
+
     tabClick(index) {
       console.log(index);
+      console.log(this.currentType);
       //条件两个以上时尽量使用switch
       // if(index == 0){
       //   this.currentType = 'pop'
@@ -96,6 +122,7 @@ export default {
           this.currentType = 'sell'
           break
       }
+      console.log(this.currentType);
     },
     /**
      * 网络请求相关代码*/
@@ -115,19 +142,28 @@ export default {
         this.goods[type].page += 1
       });
       console.log(this.goods)
-    }
-    ,
-    backClick(){
-      console.log('回到顶部');
-      this.$refs.scroll.scrollTo(0,0)
+      this.$refs.scroll.finishPullUp()
     },
-    contentScroll(position){
-      console.log(position);
-      if(position.y < -1000){
+    backClick() {
+      console.log('回到顶部');
+      this.$refs.scroll.scrollTo(0, 0)
+    },
+    contentScroll(position) {
+      //console.log(position);
+      if (position.y < -1000) {
         this.backTopShow = true
-      }else {
+      } else {
         this.backTopShow = false
       }
+
+      // if(position.y < -4180){
+      //   console.log('上拉加载更多');
+      //   console.log(this.currentType);
+      //   this.getHomeGoods(this.currentType)
+      // }
+    },
+    loadMore(){
+      this.getHomeGoods(this.currentType)
     }
 
   }
@@ -153,12 +189,9 @@ export default {
   z-index: 9;
 }
 
-.tab-control {
-  position: sticky;
-  top: 44px;
-  z-index: 9;
-}
-.content{
+
+
+.content {
   /*height: 300px;*/
   overflow: hidden;
 
@@ -168,9 +201,11 @@ export default {
   left: 0;
   right: 0;
 }
-.backtop{
+
+.backtop {
 
 }
+
 /*.content {*/
 /*  height: calc(100% - 49px);*/
 /*  overflow: hidden;*/
