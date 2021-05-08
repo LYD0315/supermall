@@ -62,6 +62,9 @@ export default {
     refresh(){
       console.log('---刷新---');
       this.scroll && this.scroll.refresh()
+    },
+    getActiveY(){
+      return this.scroll.y
     }
   }
 }
