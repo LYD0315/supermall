@@ -25,7 +25,7 @@
       //第一次开始轮播时间
       animDuration: {
 		    type: Number,
-        default: 100
+        default: 300
       },
       //翻到百分之多少就可以划到下一页了
       moveRatio: {
@@ -44,7 +44,7 @@
         totalWidth: 0, // swiper的宽度
         swiperStyle: {}, // swiper样式
         currentIndex: 1, // 当前的index
-        scrolling: false, // 是否正在滚动
+        scrolling: true, // 是否正在滚动
       }
     },
     mounted: function () {
@@ -54,7 +54,7 @@
 
         // 2.开启定时器
         this.startTimer();
-      }, 100)
+      }, 1000)
     },
     methods: {
 		  /**
