@@ -39,6 +39,7 @@ import Scroll from "components/common/scroll/Scroll";
 import BackTop from "components/content/backTop/BackTop";
 
 import {getHomeMultidata, getHomeGoods} from "network/home";
+import {itemListenerMixin} from "common/mixin";
 import {debounce} from "common/utils";
 
 
@@ -55,6 +56,7 @@ export default {
     BackTop
 
   },
+  mixins: [itemListenerMixin],
   data() {
     return {
       banners: [],
@@ -68,7 +70,7 @@ export default {
       backTopShow: false,
       tabOffsetTop: 0,
       isTabFixed: false,
-      saveY:0
+      saveY: 0,
     }
   },
   computed: {
@@ -78,16 +80,19 @@ export default {
 
 
   },
-  destroyed(){
+  destroyed() {
     console.log('homedestroy');
   },
   activated() {
     console.log('activated');
-    this.$refs.scroll.scrollTo(0,this.saveY)
+    this.$refs.scroll.scrollTo(0, this.saveY)
     this.$refs.scroll.refresh()
   },
   deactivated() {
+    //保存Y值
     this.saveY = this.$refs.scroll.getActiveY()
+    //  取消全局事件监听
+    this.$bus.$off('itemImageLoad', this.itemImgListencer)
   },
   created() {
     //请求multidata
@@ -97,16 +102,21 @@ export default {
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
 
-
+    this.tabClick(0);
   },
   mounted() {
-    const refresh = debounce(this.$refs.scroll.refresh)
-
-    //图片加载情况所以需要在mounted中进行监听
-    this.$bus.$on('itemImageLoad', () => {
-      // this.$refs.scroll.refresh();
-      refresh();
-    })
+    // const refresh = debounce(this.$refs.scroll.refresh)
+    //
+    // let newRefresh = debounce(this.$refs.scroll.refresh,100)
+    //
+    // //图片加载情况所以需要在mounted中进行监听
+    //
+    // //对监听事件进行保存
+    // this.itemImgListencer = () => {
+    //   // this.$refs.scroll.refresh();
+    //   newRefresh(20,30,'abc');
+    // }
+    // this.$bus.$on('itemImageLoad', this.itemImgListencer)
 
 
     //  拿到tabCtrl的offsetTop
@@ -142,8 +152,11 @@ export default {
           break
       }
       console.log(this.currentType);
-      this.$refs.tabCtrl1.currentIndex = index
-      this.$refs.tabCtrl2.currentIndex = index
+      if (this.$refs.tabCtrl1 !== undefined) {
+        this.$refs.tabCtrl1.currentIndex = index
+        this.$refs.tabCtrl2.currentIndex = index
+      }
+
     },
     /**
      * 网络请求相关代码*/
@@ -163,7 +176,7 @@ export default {
         this.goods[type].page += 1
         this.$refs.scroll.finishPullUp()
       });
-      console.log(this.goods)
+      //console.log(this.goods)
 
     },
     backClick() {
@@ -192,7 +205,7 @@ export default {
     },
     swiperImageLoad() {
       this.tabOffsetTop = this.$refs.tabCtrl2.$el.offsetTop
-      console.log(this.tabOffsetTop);
+      //console.log(this.tabOffsetTop);
     }
 
   }
