@@ -164,10 +164,10 @@ export default {
       product.desc = this.goods.desc
       product.price = this.goods.realPrice
       product.iid = this.iid
-    //  2.将商品添加到购物车中
-    //   this.$store.commit("addCart",product)
-    //  添加成功之后异步的将添加消息展示给用户
-    //  可以直接通过vuex中的mapActions 将actions里面的函数映射到methods中 直接使用
+      //  2.将商品添加到购物车中
+      //   this.$store.commit("addCart",product)
+      //  添加成功之后异步的将添加消息展示给用户
+      //  可以直接通过vuex中的mapActions 将actions里面的函数映射到methods中 直接使用
       this.addCart(product).then(res => {
         // console.log(res);
         this.$toast.show(res)
@@ -198,11 +198,7 @@ export default {
         }
       }
       // 3.是否显示回到顶部
-      if (positionY > 1000) {
-        this.backTopShow = true
-      } else {
-        this.backTopShow = false
-      }
+      this.backTopShow = positionY > 1000;
 
     }
   }
@@ -227,7 +223,8 @@ export default {
   background-color: #fff;
 
 }
-.detail-bottom{
+
+.detail-bottom {
   width: 100%;
 }
 </style>
