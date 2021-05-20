@@ -12,6 +12,7 @@
     </scroll>
     <detail-bottom-bar @addCart="addToCart" class="detail-bottom"></detail-bottom-bar>
     <back-top @click.native="backClick" v-show="backTopShow"></back-top>
+
   </div>
 </template>
 
@@ -27,12 +28,14 @@ import DetailCommentInfo from "./childComponents/DetailCommentInfo";
 import DetailRecommend from "./childComponents/DetailRecommend";
 import DetailBottomBar from "./childComponents/DetailBottomBar";
 import BackTop from "components/content/backTop/BackTop";
+// import Toast from "components/common/toast/Toast";
 
 import Scroll from "components/common/scroll/Scroll";
 
 import {getDetail, getRecommend, Goods, Shop, GoodsParam} from "network/detail";
 import {itemListenerMixin} from "common/mixin";
 import {debounce} from "common/utils";
+import {mapActions} from 'vuex'
 
 
 export default {
@@ -48,7 +51,7 @@ export default {
     DetailCommentInfo,
     DetailBottomBar,
     Scroll,
-    BackTop
+    BackTop,
 
   },
   mixins: [itemListenerMixin],
@@ -133,6 +136,7 @@ export default {
   updated() {
   },
   methods: {
+    ...mapActions(['addCart']),
     imageLoad() {
       this.$refs.scroll.refresh()
 
@@ -162,9 +166,18 @@ export default {
       product.iid = this.iid
     //  2.将商品添加到购物车中
     //   this.$store.commit("addCart",product)
-      this.$store.dispatch('addCart',product )
+    //  添加成功之后异步的将添加消息展示给用户
+    //  可以直接通过vuex中的mapActions 将actions里面的函数映射到methods中 直接使用
+      this.addCart(product).then(res => {
+        // console.log(res);
+        this.$toast.show(res)
+      })
+      //
+      // this.$store.dispatch('addCart',product ).then(res => {
+      //
+      // })
 
-      console.log(this.$store.state);
+      // console.log(this.$store.state);
     },
     contentScroll(position) {
       // console.log(position)

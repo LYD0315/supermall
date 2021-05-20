@@ -10,7 +10,7 @@ export default {
   props:{
     isChecked:{
       type:Boolean,
-      default:true
+      default:false
     }
   },
   methods:{
@@ -21,7 +21,7 @@ export default {
 <style scoped>
 .check-button{
 
-  border:2px solid #e7e7e7;
+  border:2px solid #c8c8c8;
   border-radius: 3px;
 }
 .check{
