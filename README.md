@@ -18,4 +18,4 @@ npm run build
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
-注：学习王红元老师的蘑菇街项目一点一点敲出来的
+注：学习王红元老师的蘑菇街项目，真正的画了两个月去把代码敲出来，收获还是很多的
